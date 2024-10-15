@@ -810,6 +810,7 @@ public:
 
 	std::vector<diameter_index_t> get_edges();
 
+	// ripser program
 	void compute_barcodes() {
 		std::vector<diameter_index_t> simplices, columns_to_reduce;
 
@@ -1173,7 +1174,7 @@ int main(int argc, char** argv) {
 
 	file_format format = DISTANCE_MATRIX;
 
-	index_t dim_max = 1;
+	index_t dim_max = 2;	// changed to 2 from 1
 	value_t threshold = std::numeric_limits<value_t>::max();
 	float ratio = 1;
 	coefficient_t modulus = 2;
@@ -1182,22 +1183,22 @@ int main(int argc, char** argv) {
 		const std::string arg(argv[i]);
 		if (arg == "--help") {
 			print_usage_and_exit(0);
-		} else if (arg == "--dim") {
+		} else if (arg == "--dim") {	// max dimension of features
 			std::string parameter = std::string(argv[++i]);
 			size_t next_pos;
 			dim_max = std::stol(parameter, &next_pos);
 			if (next_pos != parameter.size()) print_usage_and_exit(-1);
-		} else if (arg == "--threshold") {
+		} else if (arg == "--threshold") {	// max value of diameter
 			std::string parameter = std::string(argv[++i]);
 			size_t next_pos;
 			threshold = std::stof(parameter, &next_pos);
 			if (next_pos != parameter.size()) print_usage_and_exit(-1);
-		} else if (arg == "--ratio") {
+		} else if (arg == "--ratio") {	// lower bound for (death/birth)
 			std::string parameter = std::string(argv[++i]);
 			size_t next_pos;
 			ratio = std::stof(parameter, &next_pos);
 			if (next_pos != parameter.size()) print_usage_and_exit(-1);
-		} else if (arg == "--format") {
+		} else if (arg == "--format") {	// set input formate
 			std::string parameter = std::string(argv[++i]);
 			if (parameter.rfind("lower", 0) == 0)
 				format = LOWER_DISTANCE_MATRIX;
@@ -1216,7 +1217,7 @@ int main(int argc, char** argv) {
 			else
 				print_usage_and_exit(-1);
 #ifdef USE_COEFFICIENTS
-		} else if (arg == "--modulus") {
+		} else if (arg == "--modulus") {	// modulus should be prime number - speak on this more later
 			std::string parameter = std::string(argv[++i]);
 			size_t next_pos;
 			modulus = std::stol(parameter, &next_pos);
@@ -1255,6 +1256,7 @@ int main(int argc, char** argv) {
 		        max = -std::numeric_limits<value_t>::infinity(), max_finite = max;
 		int num_edges = 0;
 
+		// finding max distance in matrix between 2 points - if no threshold was provided
 		value_t enclosing_radius = std::numeric_limits<value_t>::infinity();
 		if (threshold == std::numeric_limits<value_t>::max()) {
 			for (size_t i = 0; i < dist.size(); ++i) {
@@ -1264,6 +1266,7 @@ int main(int argc, char** argv) {
 			}
 		}
 
+		// TODO: Review whats really happening here...?
 		for (auto d : dist.distances) {
 			min = std::min(min, d);
 			max = std::max(max, d);
