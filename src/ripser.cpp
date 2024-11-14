@@ -53,6 +53,8 @@
 #include <queue>
 #include <sstream>
 #include <unordered_map>
+#include <Rcpp.h>
+using namespace Rcpp;
 
 #ifdef USE_ROBINHOOD_HASHMAP
 
