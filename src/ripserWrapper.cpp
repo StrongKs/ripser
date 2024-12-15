@@ -1,65 +1,11 @@
 // [[Rcpp::plugins(cpp11)]]
 
 #include <Rcpp.h>
-#include "ripser.h" // Include ripser functionality
+#include "ripser_short.h" // Provides ripser_compute, getPointCloud, getLowerDistMatrix
 #include <vector>
 #include <string>
 
 using namespace Rcpp;
-
-// Reads point cloud data from R and creates a Euclidean distance matrix
-ripser::euclidean_distance_matrix read_point_cloud_from_R(const NumericMatrix& coordinates) {
-  // Convert NumericMatrix to std::vector<std::vector<double>> for Ripser
-  std::vector<std::vector<double>> points(coordinates.nrow(), std::vector<double>(coordinates.ncol()));
-  for (int i = 0; i < coordinates.nrow(); i++) {
-    for (int j = 0; j < coordinates.ncol(); j++) {
-      points[i][j] = coordinates(i, j);
-    }
-  }
-  return ripser::euclidean_distance_matrix(std::move(points));
-}
-
-// Reads a distance matrix from R and creates a compressed lower distance matrix
-ripser::compressed_lower_distance_matrix read_distance_matrix_from_R(const NumericMatrix& distance_matrix_R) {
-  // Check if the distance matrix is square
-  int n = distance_matrix_R.nrow();
-  if (distance_matrix_R.ncol() != n) {
-    Rcpp::stop("Distance matrix must be square");
-  }
-  
-  // Extract lower triangular part of the distance matrix
-  std::vector<ripser::value_t> distances;
-  for (int i = 1; i < n; ++i) {
-    for (int j = 0; j < i; ++j) {
-      distances.push_back(distance_matrix_R(i, j));
-    }
-  }
-  return ripser::compressed_lower_distance_matrix(std::move(distances));
-}
-
-// Converts computed barcodes into R DataFrame
-DataFrame convert_barcodes_to_R(const std::vector<std::vector<ripser::interval>>& barcodes) {
-  // Vectors to hold dimensions, birth times, and death times
-  std::vector<int> dimensions;
-  std::vector<double> births;
-  std::vector<double> deaths;
-  
-  // Populate vectors with barcode data
-  for (size_t dim = 0; dim < barcodes.size(); ++dim) {
-    for (const auto& interval : barcodes[dim]) {
-      dimensions.push_back(dim);
-      births.push_back(interval.birth);
-      deaths.push_back(interval.death);
-    }
-  }
-  
-  // Create DataFrame to return to R
-  return DataFrame::create(
-    Named("dimension") = dimensions,
-    Named("birth") = births,
-    Named("death") = deaths
-  );
-}
 
 // [[Rcpp::export]]
 DataFrame ripser_cpp(const NumericMatrix& input_data,
@@ -68,34 +14,41 @@ DataFrame ripser_cpp(const NumericMatrix& input_data,
                      double ratio = 1.0,
                      int format = 0,
                      int modulus = 2) {
-  // Read input data based on format
+  // Determine which input format we're using
+  compressed_lower_distance_matrix dist;
   if (format == 0) {
     // Input is a point cloud
-    auto distance_matrix = read_point_cloud_from_R(input_data);
-    
-    // Initialize Ripser with parameters
-    ripser::ripser<ripser::euclidean_distance_matrix> ripser_instance(
-        std::move(distance_matrix), dim_max, threshold, ratio, modulus);
-    
-    // Compute persistence barcodes
-    auto barcodes = ripser_instance.compute_barcodes();
-    
-    // Return barcodes as DataFrame
-    return convert_barcodes_to_R(barcodes);
+    dist = getPointCloud(input_data);
   } else if (format == 1) {
     // Input is a distance matrix
-    auto distance_matrix = read_distance_matrix_from_R(input_data);
-    
-    // Initialize Ripser with parameters
-    ripser::ripser<ripser::compressed_lower_distance_matrix> ripser_instance(
-        std::move(distance_matrix), dim_max, threshold, ratio, modulus);
-    
-    // Compute persistence barcodes
-    auto barcodes = ripser_instance.compute_barcodes();
-    
-    // Return barcodes as DataFrame
-    return convert_barcodes_to_R(barcodes);
+    dist = getLowerDistMatrix(input_data);
   } else {
-    Rcpp::stop("Invalid format parameter");
+    Rcpp::stop("Invalid format parameter (0: point cloud, 1: distance matrix)");
   }
+  
+  // Convert threshold to float for ripser_compute
+  float thresh_f = static_cast<float>(threshold);
+  
+  // Compute persistence intervals using ripser_compute
+  // Returns a NumericVector with (dimension, birth, death) triples
+  NumericVector intervals = ripser_compute(dist, dim_max, thresh_f, modulus);
+  
+  // intervals contains dim, birth, death in sequence
+  int n = intervals.size() / 3;
+  IntegerVector dim_col(n);
+  NumericVector birth_col(n);
+  NumericVector death_col(n);
+  
+  for (int i = 0; i < n; i++) {
+    dim_col[i] = static_cast<int>(intervals[3*i]);
+    birth_col[i] = intervals[3*i + 1];
+    death_col[i] = intervals[3*i + 2];
+  }
+  
+  // Return the barcodes as a DataFrame
+  return DataFrame::create(
+    Named("dimension") = dim_col,
+    Named("birth") = birth_col,
+    Named("death") = death_col
+  );
 }
