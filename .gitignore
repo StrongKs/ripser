@@ -2,3 +2,9 @@ DerivedData
 ripser.dSYM
 ripser
 ripser-coeff
+# Ignore ripser at root
+/ripser
+
+# Allow src/ripser
+!src/ripser/
+
