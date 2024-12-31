@@ -45,35 +45,51 @@
 
 using namespace Rcpp;
 
+// **Sean: Handles non-floating-point tasks like managing integer indices, coefficients, and unions.**
 template <class Key, class T> class hash_map : public std::unordered_map<Key, T> {};
 
+// **Sean: Defines integer-based types and constants.**
 typedef double value_t_ripser;
 typedef int64_t index_t_ripser;
 typedef uint8_t coefficient_t_ripser;
 
 static const size_t num_coefficient_bits = 8;
 
+// **Sean: Manages binomial coefficients.**
 class binomial_coeff_table {
   std::vector<std::vector<index_t_ripser>> B;
   index_t_ripser n_max, k_max;
   
 public:
   binomial_coeff_table(index_t_ripser n, index_t_ripser k) {
+    // Implementation here
   }
   
   index_t_ripser operator()(index_t_ripser n, index_t_ripser k) const {
+    // Implementation here
+    return 0; // Placeholder
   }
 };
 
+// **Sean: Checks for prime coefficients.**
 bool is_prime(const coefficient_t_ripser n) {
+  // Implementation here
+  return false; // Placeholder
 }
 
+// **Sean: Computes multiplicative inverse vector.**
 std::vector<coefficient_t_ripser> multiplicative_inverse_vector(const coefficient_t_ripser m) {
+  // Implementation here
+  return std::vector<coefficient_t_ripser>(); // Placeholder
 }
 
+// **Sean: Retrieves the next vertex in simplex enumeration.**
 index_t_ripser get_next_vertex(index_t_ripser& v, const index_t_ripser idx, const index_t_ripser k, const binomial_coeff_table& binomial_coeff) {
+  // Implementation here
+  return 0; // Placeholder
 }
 
+// **Sean: Extracts simplex vertices based on index.**
 template <typename OutputIterator>
 OutputIterator get_simplex_vertices(index_t_ripser idx, const index_t_ripser dim, index_t_ripser v,
                                     const binomial_coeff_table& binomial_coeff, OutputIterator out) {
@@ -86,11 +102,15 @@ OutputIterator get_simplex_vertices(index_t_ripser idx, const index_t_ripser dim
   return out;
 }
 
+// **Sean: Retrieves vertices of a simplex.**
 std::vector<index_t_ripser> vertices_of_simplex(const index_t_ripser simplex_index, const index_t_ripser dim, const index_t_ripser n,
                                                 const binomial_coeff_table& binomial_coeff) {
+  // Implementation here
+  return std::vector<index_t_ripser>(); // Placeholder
 }
 
 #pragma pack(1)
+// **Sean: Defines the entry structure with bitfields for index and coefficient.**
 struct entry_t {
   index_t_ripser index : 8 * sizeof(index_t_ripser) - num_coefficient_bits;
   coefficient_t_ripser coefficient : num_coefficient_bits;
@@ -100,8 +120,9 @@ struct entry_t {
 };
 #pragma pack() // reset
 
-//  static_assert(sizeof(entry_t) == sizeof(index_t_ripser), "size of entry_t is not the same as index_t");
+//  static_assert(sizeof(entry_t) == sizeof(index_t_ripser), "size of entry_t is not the same as index_t_ripser");
 
+// **Sean: Helper functions for entry_t.**
 entry_t make_entry(index_t_ripser i, coefficient_t_ripser c) { return entry_t(i, c); }
 index_t_ripser get_index(const entry_t& e) { return e.index; }
 index_t_ripser get_coefficient(const entry_t& e) { return e.coefficient; }
@@ -113,6 +134,7 @@ template <typename Entry> struct smaller_index {
   bool operator()(const Entry& a, const Entry& b) { return get_index(a) < get_index(b); }
 };
 
+// **Sean: Defines diameter-related structures and helper functions.**
 class diameter_index_t : public std::pair<value_t_ripser, index_t_ripser> {
 public:
   diameter_index_t() : std::pair<value_t_ripser, index_t_ripser>() {}
@@ -148,6 +170,7 @@ template <typename Entry> struct greater_diameter_or_smaller_index {
   }
 };
 
+// **Kent: Handles floating-point tasks like distance matrix operations and computations.**
 template <typename DistanceMatrix> class rips_filtration_comparator {
 public:
   const DistanceMatrix& dist;
@@ -184,6 +207,7 @@ public:
   }
 };
 
+// **Kent: Enumerates simplex coboundaries for floating-point computations.**
 template <class DistanceMatrix> class simplex_coboundary_enumerator {
 private:
   const diameter_entry_t simplex;
@@ -225,8 +249,10 @@ public:
   }
 };
 
+// **Sean: Enumerates compressed distance matrices.**
 enum compressed_matrix_layout { LOWER_TRIANGULAR, UPPER_TRIANGULAR };
 
+// **Kent: Manages compressed distance matrices with floating-point operations.**
 template <compressed_matrix_layout Layout> class compressed_distance_matrix {
 public:
   std::vector<value_t_ripser> distances;
@@ -254,6 +280,7 @@ public:
   size_t size() const { return rows.size(); }
 };
 
+// **Kent: Initializes rows for LOWER_TRIANGULAR layout.**
 template <> void compressed_distance_matrix<LOWER_TRIANGULAR>::init_rows() {
   value_t_ripser* pointer = &distances[0];
   for (index_t_ripser i = 1; i < size(); ++i) {
@@ -262,6 +289,7 @@ template <> void compressed_distance_matrix<LOWER_TRIANGULAR>::init_rows() {
   }
 }
 
+// **Kent: Initializes rows for UPPER_TRIANGULAR layout.**
 template <> void compressed_distance_matrix<UPPER_TRIANGULAR>::init_rows() {
   value_t_ripser* pointer = &distances[0] - 1;
   for (index_t_ripser i = 0; i < size() - 1; ++i) {
@@ -270,11 +298,13 @@ template <> void compressed_distance_matrix<UPPER_TRIANGULAR>::init_rows() {
   }
 }
 
+// **Kent: Accessor for UPPER_TRIANGULAR distance matrix.**
 template <> value_t_ripser compressed_distance_matrix<UPPER_TRIANGULAR>::operator()(index_t_ripser i, index_t_ripser j) const {
   if (i > j) std::swap(i, j);
   return i == j ? 0 : rows[i][j];
 }
 
+// **Kent: Accessor for LOWER_TRIANGULAR distance matrix.**
 template <> value_t_ripser compressed_distance_matrix<LOWER_TRIANGULAR>::operator()(index_t_ripser i, index_t_ripser j) const {
   if (i > j) std::swap(i, j);
   return i == j ? 0 : rows[j][i];
@@ -283,6 +313,7 @@ template <> value_t_ripser compressed_distance_matrix<LOWER_TRIANGULAR>::operato
 typedef compressed_distance_matrix<LOWER_TRIANGULAR> compressed_lower_distance_matrix;
 typedef compressed_distance_matrix<UPPER_TRIANGULAR> compressed_upper_distance_matrix;
 
+// **Kent: Defines Euclidean distance matrix operations.**
 class euclidean_distance_matrix {
 public:
   std::vector<std::vector<value_t_ripser>> points;
@@ -290,25 +321,50 @@ public:
   euclidean_distance_matrix(std::vector<std::vector<value_t_ripser>>&& _points) : points(_points) {}
   
   value_t_ripser operator()(const index_t_ripser i, const index_t_ripser j) const {
+    // Implementation here
+    return 0.0; // Placeholder
   }
   
   size_t size() const { return points.size(); }
 };
 
+// **Sean: Implements Union-Find data structure for managing disjoint sets.**
 class union_find {
   std::vector<index_t_ripser> parent;
   std::vector<uint8_t> rank;
   
 public:
   union_find(index_t_ripser n) : parent(n), rank(n, 0) {
+    for (index_t_ripser i = 0; i < n; ++i) {
+      parent[i] = i;
+    }
   }
   
   index_t_ripser find(index_t_ripser x) {
+    if (parent[x] != x) {
+      parent[x] = find(parent[x]); // Path compression
+    }
+    return parent[x];
   }
+  
   void link(index_t_ripser x, index_t_ripser y) {
+    index_t_ripser x_root = find(x);
+    index_t_ripser y_root = find(y);
+    if (x_root == y_root) return;
+    
+    // Union by rank
+    if (rank[x_root] < rank[y_root]) {
+      parent[x_root] = y_root;
+    } else {
+      parent[y_root] = x_root;
+      if (rank[x_root] == rank[y_root]) {
+        rank[x_root]++;
+      }
+    }
   }
 };
 
+// **Sean: Handles pivot operations in reduction.**
 template <typename Heap> diameter_entry_t pop_pivot(Heap& column, coefficient_t_ripser modulus) {
   if (column.empty())
     return diameter_entry_t(-1);
@@ -334,6 +390,7 @@ template <typename Heap> diameter_entry_t get_pivot(Heap& column, coefficient_t_
   return result;
 }
 
+// **Sean: Defines a compressed sparse matrix for efficient storage.**
 template <typename ValueType> class compressed_sparse_matrix {
   std::vector<size_t> bounds;
   std::vector<ValueType> entries;
@@ -375,11 +432,13 @@ public:
   }
 };
 
+// **Sean: Pushes an entry into the heap with proper coefficient handling.**
 template <typename Heap> void push_entry(Heap& column, index_t_ripser i, coefficient_t_ripser c, value_t_ripser diameter) {
   entry_t e = make_entry(i, c);
   column.push(std::make_pair(diameter, e));
 }
 
+// **Sean: Assembles columns to reduce based on current pivot indices.**
 template <typename Comparator>
 void assemble_columns_to_reduce(std::vector<diameter_index_t>& columns_to_reduce,
                                 hash_map<index_t_ripser, index_t_ripser>& pivot_column_index, const Comparator& comp, index_t_ripser dim,
@@ -399,6 +458,7 @@ void assemble_columns_to_reduce(std::vector<diameter_index_t>& columns_to_reduce
             greater_diameter_or_smaller_index<diameter_index_t>());
 }
 
+// **Sean: Computes persistence pairs using reduction algorithm.**
 template <typename DistanceMatrix, typename ComparatorCofaces, typename Comparator>
 void compute_pairs(std::vector<diameter_index_t>& columns_to_reduce, hash_map<index_t_ripser, index_t_ripser>& pivot_column_index,
                    index_t_ripser dim, index_t_ripser n, value_t_ripser threshold, coefficient_t_ripser modulus,
@@ -407,7 +467,7 @@ void compute_pairs(std::vector<diameter_index_t>& columns_to_reduce, hash_map<in
                    const binomial_coeff_table& binomial_coeff,
                    std::vector<std::vector<value_t_ripser>> &pers_hom) {
   
-  //PRINT VALUES
+  // PRINT VALUES
   int currDim = dim;
   
   std::vector<diameter_entry_t> coface_entries;
@@ -426,8 +486,7 @@ void compute_pairs(std::vector<diameter_index_t>& columns_to_reduce, hash_map<in
     value_t_ripser diameter = get_diameter(column_to_reduce);
     index_t_ripser j = i;
     
-    // start with a dummy pivot entry with coefficient -1 in order to initialize
-    // working_coboundary with the coboundary of the simplex with index column_to_reduce
+    // Start with a dummy pivot entry with coefficient -1 to initialize the working_coboundary
     diameter_entry_t pivot(0, -1, -1 + modulus);
     bool might_be_apparent_pair = (i == j);
     
@@ -472,7 +531,7 @@ void compute_pairs(std::vector<diameter_index_t>& columns_to_reduce, hash_map<in
       
       found_persistence_pair:
         
-        //PRINT VALUES
+        // PRINT VALUES
         value_t_ripser death = get_diameter(pivot);
       if (diameter != death) {
         std::vector<value_t_ripser> curr;
@@ -488,29 +547,44 @@ void compute_pairs(std::vector<diameter_index_t>& columns_to_reduce, hash_map<in
   }
 }
 
-//enum file_format {POINT_CLOUD};
-
+// **Sean: Reads binary data from input stream.**
 template <typename T> T read(std::istream& s) {
   T result;
   s.read(reinterpret_cast<char*>(&result), sizeof(T));
   return result; // on little endian: boost::endian::little_to_native(result);
 }
 
+// **Kent: Constructs a lower distance matrix from a point cloud.**
 compressed_lower_distance_matrix getPointCloud(const NumericMatrix& inputMat) {
+  // Implementation here
+  return compressed_lower_distance_matrix(); // Placeholder
 }
 
+// **Kent: Constructs a lower distance matrix directly.**
 compressed_lower_distance_matrix getLowerDistMatrix(const NumericMatrix& inputMat) {
+  // Implementation here
+  return compressed_lower_distance_matrix(); // Placeholder
 }
 
-// convert from user format into lower distance matrix
+// **Kent: Reads input file and converts to lower distance matrix based on format.**
+// Convert from user format into lower distance matrix
 compressed_lower_distance_matrix read_file(const NumericMatrix& input_points, int format) {
+  if (format == 0) {
+    return getPointCloud(input_points);
+  } else if (format == 1) {
+    return getLowerDistMatrix(input_points);
+  } else {
+    Rcpp::stop("Unsupported format.");
+  }
+  return compressed_lower_distance_matrix(); // Placeholder
 }
 
+// **Kent: Computes persistence barcodes from distance matrix and parameters.**
 // Given distances and parameters, computes barcodes
 template < typename DistanceMatrix >
 NumericVector ripser_compute(const DistanceMatrix& dist, int dim, float thresh, int p){
   
-  //MY VARS
+  // MY VARS
   int currDim = 0;
   std::vector<std::vector<value_t_ripser>> pers_hom;
   
@@ -539,7 +613,7 @@ NumericVector ripser_compute(const DistanceMatrix& dist, int dim, float thresh, 
     }
     std::sort(edges.rbegin(), edges.rend(), greater_diameter_or_smaller_index<diameter_index_t>());
     
-    //PRINT VALUE
+    // PRINT VALUE
     currDim = 0;
     
     std::vector<index_t_ripser> vertices_of_edge(2);
@@ -549,7 +623,7 @@ NumericVector ripser_compute(const DistanceMatrix& dist, int dim, float thresh, 
       index_t_ripser u = dset.find(vertices_of_edge[0]), v = dset.find(vertices_of_edge[1]);
       
       if (u != v) {
-        //PRINT VALUE
+        // PRINT VALUE
         if (get_diameter(e) > 0) {
           std::vector<value_t_ripser> curr;
           curr.push_back(currDim);
@@ -593,13 +667,20 @@ NumericVector ripser_compute(const DistanceMatrix& dist, int dim, float thresh, 
 }
 
 
+// **Kent: Wrapper function for Rcpp to compute persistence barcodes from distance vector.**
 // [[Rcpp::export]]
 NumericVector ripser_cpp_dist(const NumericVector& dist_r, int dim, float thresh, int p){
+  // Implementation here
+  // Placeholder for actual implementation
+  return NumericVector(); // Placeholder
 }
 
+// **Kent: Wrapper function for Rcpp to compute persistence barcodes from input points or distance matrix.**
 // Altered version of Ripser by Ulrich Bauer
 // format = 0 --> point cloud
 // format = 1 --> lower distance matrix
 // [[Rcpp::export]]
 NumericVector ripser_cpp(const NumericMatrix& input_points, int dim, float thresh, int p, int format) {
+  compressed_lower_distance_matrix dist = read_file(input_points, format);
+  return ripser_compute(dist, dim, thresh, p);
 }
