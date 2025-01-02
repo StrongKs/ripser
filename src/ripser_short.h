@@ -313,20 +313,20 @@ template <> value_t_ripser compressed_distance_matrix<LOWER_TRIANGULAR>::operato
 typedef compressed_distance_matrix<LOWER_TRIANGULAR> compressed_lower_distance_matrix;
 typedef compressed_distance_matrix<UPPER_TRIANGULAR> compressed_upper_distance_matrix;
 
-// **Kent: Defines Euclidean distance matrix operations.**
-class euclidean_distance_matrix {
-public:
-  std::vector<std::vector<value_t_ripser>> points;
-  
-  euclidean_distance_matrix(std::vector<std::vector<value_t_ripser>>&& _points) : points(_points) {}
-  
-  value_t_ripser operator()(const index_t_ripser i, const index_t_ripser j) const {
-    // Implementation here
-    return 0.0; // Placeholder
-  }
-  
-  size_t size() const { return points.size(); }
-};
+// **Kent: Defines Euclidean distance matrix operations.** - May not be needed
+//class euclidean_distance_matrix {
+//public:
+//  std::vector<std::vector<value_t_ripser>> points;
+//
+//  euclidean_distance_matrix(std::vector<std::vector<value_t_ripser>>&& _points) : points(_points) {}
+//
+//  value_t_ripser operator()(const index_t_ripser i, const index_t_ripser j) const {
+//    // Implementation here
+//    return 0.0; // Placeholder
+//  }
+//
+//  size_t size() const { return points.size(); }
+//};
 
 // **Sean: Implements Union-Find data structure for managing disjoint sets.**
 class union_find {
@@ -556,14 +556,44 @@ template <typename T> T read(std::istream& s) {
 
 // **Kent: Constructs a lower distance matrix from a point cloud.**
 compressed_lower_distance_matrix getPointCloud(const NumericMatrix& inputMat) {
-  // Implementation here
-  return compressed_lower_distance_matrix(); // Placeholder
+	int n = inputMat.nrow();  // Number of points (rows)
+	int d = inputMat.ncol();  // Number of dimensions (columns)
+
+	// Create a vector to store the lower triangular part of the distance matrix
+	std::vector<value_t_ripser> lower_triangular;
+
+	// Calculate pairwise Euclidean distances and store the lower triangular part
+	for (int i = 0; i < n; ++i) {
+		for (int j = 0; j <= i; ++j) {  // We only need the lower triangle
+			value_t_ripser distance = 0;
+			for (int k = 0; k < d; ++k) {
+				value_t_ripser diff = inputMat(i, k) - inputMat(j, k);
+				distance += diff * diff;
+			}
+			lower_triangular.push_back(std::sqrt(distance));  // Store the distance (sqrt for Euclidean distance)
+		}
+	}
+
+	// Return the compressed_lower_distance_matrix created from the vector
+	return compressed_lower_distance_matrix(std::move(lower_triangular));
 }
 
 // **Kent: Constructs a lower distance matrix directly.**
 compressed_lower_distance_matrix getLowerDistMatrix(const NumericMatrix& inputMat) {
-  // Implementation here
-  return compressed_lower_distance_matrix(); // Placeholder
+	int n = inputMat.nrow();  // Get the number of rows (or columns) since it's a square matrix
+
+	// Create a vector to store the lower triangular part of the matrix (including the diagonal)
+	std::vector<value_t_ripser> lower_triangular;
+
+	// Populate the vector with the lower triangular elements (i.e., i <= j)
+	for (int i = 0; i < n; ++i) {
+		for (int j = 0; j <= i; ++j) {
+			lower_triangular.push_back(inputMat(i, j));  // Add the element to the vector
+		}
+	}
+
+	// Create and return the compressed_lower_distance_matrix using the vector
+	return compressed_lower_distance_matrix(std::move(lower_triangular));
 }
 
 // **Kent: Reads input file and converts to lower distance matrix based on format.**
@@ -576,7 +606,6 @@ compressed_lower_distance_matrix read_file(const NumericMatrix& input_points, in
   } else {
     Rcpp::stop("Unsupported format.");
   }
-  return compressed_lower_distance_matrix(); // Placeholder
 }
 
 // **Kent: Computes persistence barcodes from distance matrix and parameters.**
