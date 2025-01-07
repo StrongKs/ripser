@@ -24,3 +24,15 @@ This version includes the integration of the `ripser_short.h` header file with u
 ### Notes
 - Updated the header file to streamline the collaboration process and align with the new functionality.
 
+## Version 0.0.3 - Additions to `ripserWrapper.cpp`
+
+### Updates
+- **Integer-Based Utilities**: Integrated logic for handling integer-based tasks such as managing binomial coefficients, verifying prime coefficients, and computing multiplicative inverses for modular arithmetic.
+- **Union-Find Implementation**: Added a robust union-find structure for managing connected components during barcode computation.
+- **Simplification Logic**: Introduced helper functions like `get_next_vertex()` and `get_simplex_vertices()` for efficient simplex enumeration.
+- **Persistence Computation**: Enhanced functionality for computing persistence pairs by incorporating additional structures for managing diameter entries and coboundary enumerators.
+- **Input Handling Improvements**: Reused modularized functions for converting R matrix inputs into suitable distance matrix formats.
+- **Output Clarifications**: Maintained the modular structure to ensure outputs remain clear and consistent for R users while adding critical functionality.
+
+### Notes
+- Ensured seamless integration between Kent’s original code and Sean’s additions for clarity and performance.
