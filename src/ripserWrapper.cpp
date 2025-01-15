@@ -192,6 +192,14 @@ inline index_t_ripser get_index(const entry_t& e) { return e.index; }
 inline index_t_ripser get_coefficient(const entry_t& e) { return e.coefficient; }
 inline void set_coefficient(entry_t& e, coefficient_t_ripser c) { e.coefficient = c; }
 
+const entry_t& get_entry(const entry_t& e) { return e; }
+
+// Compares indices
+template <typename Entry> 
+struct smaller_index {
+  bool operator()(const Entry& a, const Entry& b) { return get_index(a) < get_index(b); }
+};
+
 // Diameters
 class diameter_index_t : public std::pair<value_t_ripser, index_t_ripser> {
 public:
@@ -213,6 +221,8 @@ public:
   diameter_entry_t(const diameter_index_t& di) : diameter_entry_t(di, 1) {}
 };
 
+inline entry_t& get_entry(const diameter_entry_t& p) { return p.second; }
+entry_t& get_entry(diameter_entry_t& p) { return p.second; }
 inline value_t_ripser get_diameter(const diameter_entry_t& p) { return p.first; }
 inline index_t_ripser get_index(const diameter_entry_t& p)    { return p.second.index; }
 inline coefficient_t_ripser get_coefficient(const diameter_entry_t& p) { return p.second.coefficient; }
