@@ -36,3 +36,19 @@ This version includes the integration of the `ripser_short.h` header file with u
 
 ### Notes
 - Ensured seamless integration between Kent’s original code and Sean’s additions for clarity and performance.
+# Changelog
+
+## Version 0.0.4 - R-Based Unit Testing Integration
+
+### Updates
+
+#### Unit Testing (`src/UnitTests/Tests.R`)
+- **R Unit Tests Added**: Introduced `Tests.R` to validate the following functionalities:
+
+#### Repository Updates
+- **Directory Structure**: Added `src/UnitTests/` directory to house R-based test scripts.
+- **Documentation**: Updated comments in the codebase to describe the testing framework and facilitate easier collaboration.
+
+---
+
+Functionality testing for these updates will be conducted with the team
