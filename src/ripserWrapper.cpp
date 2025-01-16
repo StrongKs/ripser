@@ -11,18 +11,6 @@ DataFrame ripser_cpp(const NumericMatrix& input_data,
                      double ratio = 1.0,
                      int format = 0,
                      int modulus = 2) {
-	// Determine which input format we're using
-	compressed_lower_distance_matrix dist;
-	if (format == 0) {
-		// Input is a point cloud
-		dist = getPointCloud(input_data);
-	} else if (format == 1) {
-		// Input is a distance matrix
-		dist = getLowerDistMatrix(input_data);
-	} else {
-		Rcpp::stop("Invalid format parameter (0: point cloud, 1: distance matrix)");
-	}
-	//  compressed_lower_distance_matrix dist;
 
 	compressed_lower_distance_matrix dist = read_file(input_data, format);
 	//  if (format == 0) {
