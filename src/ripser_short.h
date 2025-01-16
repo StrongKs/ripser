@@ -62,31 +62,67 @@ class binomial_coeff_table {
   
 public:
   binomial_coeff_table(index_t_ripser n, index_t_ripser k) {
-    // Implementation here
+	  // Implementation here
+	  n_max = n;
+	    k_max = k;
+	    B.resize(n + 1);
+	    for (index_t_ripser i = 0; i <= n; i++) {
+	      B[i].resize(k + 1);
+	      for (index_t_ripser j = 0; j <= std::min(i, k); j++) {
+	        if (j == 0 || j == i) B[i][j] = 1;
+	        else B[i][j] = B[i - 1][j - 1] + B[i - 1][j];
+	      }
+	    }
   }
   
   index_t_ripser operator()(index_t_ripser n, index_t_ripser k) const {
     // Implementation here
-    return 0; // Placeholder
+    assert(n <= n_max);
+    assert(k <= k_max);
+    return B[n][k];
   }
 };
 
 // **Sean: Checks for prime coefficients.**
 bool is_prime(const coefficient_t_ripser n) {
   // Implementation here
-  return false; // Placeholder
+  if (n < 2) return false;
+  if (!(n & 1)) return (n == 2);
+  for (coefficient_t_ripser p = 3; p <= (coefficient_t_ripser)std::sqrt(n); p += 2) {
+    if ((n % p) == 0) return false;
+  }
+  return true;
 }
 
 // **Sean: Computes multiplicative inverse vector.**
 std::vector<coefficient_t_ripser> multiplicative_inverse_vector(const coefficient_t_ripser m) {
   // Implementation here
-  return std::vector<coefficient_t_ripser>(); // Placeholder
+  std::vector<coefficient_t_ripser> inv(m, 0);
+  inv[1] = 1;
+  for (coefficient_t_ripser a = 2; a < m; ++a) {
+    inv[a] = m - (inv[m % a] * (m / a)) % m;
+  }
+  return inv;
 }
 
 // **Sean: Retrieves the next vertex in simplex enumeration.**
 index_t_ripser get_next_vertex(index_t_ripser& v, const index_t_ripser idx, const index_t_ripser k, const binomial_coeff_table& binomial_coeff) {
   // Implementation here
-  return 0; // Placeholder
+	if (binomial_coeff(v, k) > idx) {
+	    index_t_ripser count = v;
+	    while (count > 0) {
+	      index_t_ripser i = v;
+	      index_t_ripser step = count >> 1;
+	      i -= step;
+	      if (binomial_coeff(i, k) > idx) {
+	        v = --i;
+	        count -= step + 1;
+	      } else {
+	        count = step;
+	      }
+	    }
+	  }
+	  return v;
 }
 
 // **Sean: Extracts simplex vertices based on index.**
@@ -103,11 +139,13 @@ OutputIterator get_simplex_vertices(index_t_ripser idx, const index_t_ripser dim
 }
 
 // **Sean: Retrieves vertices of a simplex.**
+/* Not called in file
 std::vector<index_t_ripser> vertices_of_simplex(const index_t_ripser simplex_index, const index_t_ripser dim, const index_t_ripser n,
                                                 const binomial_coeff_table& binomial_coeff) {
   // Implementation here
   return std::vector<index_t_ripser>(); // Placeholder
 }
+*/
 
 #pragma pack(1)
 // **Sean: Defines the entry structure with bitfields for index and coefficient.**
@@ -698,11 +736,13 @@ NumericVector ripser_compute(const DistanceMatrix& dist, int dim, float thresh, 
 
 // **Kent: Wrapper function for Rcpp to compute persistence barcodes from distance vector.**
 // [[Rcpp::export]]
+/* Not called in file, encompassed by ripser_cpp in ripserWrapper.cpp
 NumericVector ripser_cpp_dist(const NumericVector& dist_r, int dim, float thresh, int p){
   // Implementation here
   // Placeholder for actual implementation
   return NumericVector(); // Placeholder
 }
+*/
 
 // **Kent: Wrapper function for Rcpp to compute persistence barcodes from input points or distance matrix.**
 // Altered version of Ripser by Ulrich Bauer
