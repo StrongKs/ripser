@@ -1,0 +1,5 @@
+read_lower_tri <- function(file){
+  mat <- read.csv(file, header=FALSE, blank.lines.skip=FALSE)
+  as.dist(mat)
+}
+read_lower_tri("downloads/...")
