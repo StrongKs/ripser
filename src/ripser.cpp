@@ -53,8 +53,6 @@
 #include <queue>
 #include <sstream>
 #include <unordered_map>
-#include <Rcpp.h>
-using namespace Rcpp;
 
 #ifdef USE_ROBINHOOD_HASHMAP
 
@@ -100,7 +98,7 @@ void check_overflow(index_t i) {
 
 class binomial_coeff_table {
 	std::vector<std::vector<index_t>> B;
-	
+
 
 public:
 	binomial_coeff_table(index_t n, index_t k) : B(k + 1, std::vector<index_t>(n + 1, 0)) {
@@ -726,7 +724,7 @@ public:
 #endif
 
 		compressed_sparse_matrix<diameter_entry_t> reduction_matrix;
-		
+
 #ifdef INDICATE_PROGRESS
 		std::chrono::steady_clock::time_point next = std::chrono::steady_clock::now() + time_step;
 #endif
