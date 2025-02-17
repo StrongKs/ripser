@@ -1,0 +1,17 @@
+* installing *source* package ‘ripserR’ ...
+** using staged installation
+** libs
+clang++ -arch arm64 -std=gnu++14 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG  -I'/Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/library/Rcpp/include' -I/opt/R/arm64/include   -fPIC  -std=gnu++11 -Wall -g -O2 -c RcppExports.cpp -o RcppExports.o
+clang++ -arch arm64 -std=gnu++14 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG  -I'/Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/library/Rcpp/include' -I/opt/R/arm64/include   -fPIC  -std=gnu++11 -Wall -g -O2 -c rcpp_hello_world.cpp -o rcpp_hello_world.o
+clang++ -arch arm64 -std=gnu++14 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG  -I'/Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/library/Rcpp/include' -I/opt/R/arm64/include   -fPIC  -std=gnu++11 -Wall -g -O2 -c ripserSol.cpp -o ripserSol.o
+clang++ -arch arm64 -std=gnu++14 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG  -I'/Library/Frameworks/R.framework/Versions/4.2-arm64/Resources/library/Rcpp/include' -I/opt/R/arm64/include   -fPIC  -std=gnu++11 -Wall -g -O2 -c ripserSolution.cpp -o ripserSolution.o
+ripserSolution.cpp:32:3: error: use of class template 'ripser' requires template arguments
+   32 |   ripser r(std::move(matrix), dim_max, threshold, modulus);
+      |   ^
+./ripserSol.cpp:397:42: note: template is declared here
+  397 | template <typename DistanceMatrix> class ripser {
+      | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~       ^
+1 error generated.
+make: *** [ripserSolution.o] Error 1
+ERROR: compilation failed for package ‘ripserR’
+* removing ‘/Users/kentphipps/R_Projects/RipserV2/ripserR.Rcheck/ripserR’

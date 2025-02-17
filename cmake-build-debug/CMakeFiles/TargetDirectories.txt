@@ -1,0 +1,3 @@
+/Users/kentphipps/R_Projects/RipserV2/cmake-build-debug/CMakeFiles/RipserV2.dir
+/Users/kentphipps/R_Projects/RipserV2/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/kentphipps/R_Projects/RipserV2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
