@@ -11,9 +11,9 @@
 #include <cstdint>
 #include <unordered_map>
 
+#include "types.h"
 #include "sparse_distance_matrix.h"
 #include "compressed_distance_matrix.h"
-#include "types.h"
 #include "union_find.h"
 #include "binomial_coeff_table.h"
 #include "compressed_sparse_matrix.h"
@@ -57,8 +57,8 @@ public:
     class simplex_coboundary_enumerator;
 
     void compute_dim_0_pairs(std::vector<diameter_index_t> &edges, std::vector<diameter_index_t> &columns_to_reduce);
-    template <typename OutputIterator>
-    OutputIterator get_simplex_vertices(index_t idx, const index_t dim, index_t n, OutputIterator out) const;
+//    template <typename OutputIterator>
+//    static OutputIterator get_simplex_vertices(index_t idx, const index_t dim, index_t n, OutputIterator out) ;
     index_t get_max_vertex(const index_t idx, const index_t k, const index_t n) const;
     diameter_entry_t get_zero_apparent_cofacet(const diameter_entry_t simplex, const index_t dim);
     diameter_entry_t get_zero_pivot_cofacet(const diameter_entry_t simplex, const index_t dim);
@@ -86,14 +86,19 @@ public:
     void assemble_columns_to_reduce(std::vector<diameter_index_t>& simplices,
                                     std::vector<diameter_index_t>& columns_to_reduce,
                                     entry_hash_map& pivot_column_index, index_t dim);
+    index_t get_edge_index(const index_t i, const index_t j) const;
+    bool is_in_zero_apparent_pair(const diameter_entry_t simplex, const index_t dim);
 };
 
-// Explicit template specializations for compressed_lower_distance_matrix and sparse_distance_matrix
-template <>
-class ripser<compressed_lower_distance_matrix>;
+template <typename OutputIterator>
+OutputIterator get_simplex_vertices(index_t idx, const index_t dim, index_t n, OutputIterator out);
 
-template <>
-class ripser<sparse_distance_matrix>;
+// Explicit template specializations for compressed_lower_distance_matrix and sparse_distance_matrix
+//template <>
+//class ripser<compressed_lower_distance_matrix>;
+//
+//template <>
+//class ripser<sparse_distance_matrix>;
 
 // Include template implementation
 #include "ripser.tpp"

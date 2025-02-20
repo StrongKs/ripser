@@ -1,6 +1,20 @@
 # ninja log v5
-1	527	1739748528344215420	CMakeFiles/RipserV2.dir/ripserR/src/resource/sparse_distance_matrix.cpp.o	f803bfd44861506e
 4	199	1739748580493929153	CMakeFiles/RipserV2.dir/ripserR/src/rcpp_hello_world.cpp.o	835f74cc7bc9267
-5	200	1739748580493928653	CMakeFiles/RipserV2.dir/ripserR/src/ripserSol.cpp.o	57d455750759d384
+3	204	1740020247377713899	CMakeFiles/RipserV2.dir/ripserR/src/ripserSol.cpp.o	57d455750759d384
+32	548	1740017974654521818	CMakeFiles/RipserV2.dir/ripserR/src/resource/sparse_distance_matrix.cpp.o	f803bfd44861506e
+32	572	1740017974677990755	CMakeFiles/RipserV2.dir/ripserR/src/resource/union_find.cpp.o	66eaac36bf5050b0
 5	200	1739748580493927528	CMakeFiles/RipserV2.dir/ripserR/src/RcppExports.cpp.o	f54209e15ebc736c
 199	223	1739748580520248066	CMakeFiles/RipserV2.dir/ripserR/src/ripserSolution.cpp.o	8bd5bf6bea7f392f
+2	289	1740020258066075019	CMakeFiles/RipserV2.dir/ripserR/src/resource/binomial_coeff_table.cpp.o	d5713504c8446ba7
+2	196	1740020673687625776	CMakeFiles/RipserV2.dir/ripserR/src/resource/ripser.cpp.o	4b1e94f0e423b024
+3	914	1740022075664170593	CMakeFiles/RipserV2.dir/ripserR/src/ripserSol.cpp.o	57d455750759d384
+4	193	1740024301691601878	CMakeFiles/RipserV2.dir/ripserR/src/ripserSol.cpp.o	57d455750759d384
+8	910	1740024980982772461	CMakeFiles/RipserV2.dir/ripserR/src/ripserSol.cpp.o	57d455750759d384
+12	198	1740025900224007115	CMakeFiles/RipserV2.dir/ripserR/src/ripserSol.cpp.o	57d455750759d384
+6	890	1740026136346958399	CMakeFiles/RipserV2.dir/ripserR/src/ripserSol.cpp.o	57d455750759d384
+6	202	1740027336938536461	CMakeFiles/RipserV2.dir/ripserR/src/ripserSol.cpp.o	57d455750759d384
+3	1072	1740027668820600000	CMakeFiles/RipserV2.dir/ripserR/src/ripserSol.cpp.o	57d455750759d384
+4	201	1740027970887232952	CMakeFiles/RipserV2.dir/ripserR/src/ripserSol.cpp.o	57d455750759d384
+2	373	1740028027048271633	CMakeFiles/RipserV2.dir/ripserR/src/resource/sparse_distance_matrix.cpp.o	f803bfd44861506e
+9	434	1740028039517234895	CMakeFiles/RipserV2.dir/ripserR/src/resource/sparse_distance_matrix.cpp.o	f803bfd44861506e
+1	1048	1740028104791033649	CMakeFiles/RipserV2.dir/ripserR/src/main.cpp.o	c7e510a94c91c89a

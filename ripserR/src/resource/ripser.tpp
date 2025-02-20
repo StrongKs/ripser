@@ -2,6 +2,7 @@
 #define RIPSERR_TPP
 
 #include "ripser.h"
+#include "compressed_distance_matrix.h"
 
 // Implementation of template function get_max
 template <class Predicate>
@@ -40,40 +41,70 @@ ripser<DistanceMatrix>::ripser(DistanceMatrix&& _dist, index_t _dim_max, value_t
       ratio(_ratio), modulus(_modulus), binomial_coeff(n, dim_max + 2),
       multiplicative_inverse(multiplicative_inverse_vector(_modulus)) {}
 
-// Implementation of `get_max_vertex`
-template <typename DistanceMatrix>
-index_t ripser<DistanceMatrix>::get_max_vertex(const index_t idx, const index_t k, const index_t n) const {
-    return get_max(n, k - 1, [&](index_t w) -> bool { return (binomial_coeff(w, k) <= idx); });
-}
 
-// Implementation of `get_simplex_vertices`
-template <typename DistanceMatrix>
-template <typename OutputIterator>
-OutputIterator ripser<DistanceMatrix>::get_simplex_vertices(index_t idx, const index_t dim, index_t n, OutputIterator out) const {
-    --n;
-    for (index_t k = dim + 1; k > 1; --k) {
-        n = get_max_vertex(idx, k, n);
-        *out++ = n;
-        idx -= binomial_coeff(n, k);
-    }
-    *out = idx;
-    return out;
-}
+
+
+
 
 // Definition of `simplex_boundary_enumerator`
 template <typename DistanceMatrix>
 class ripser<DistanceMatrix>::simplex_boundary_enumerator {
 private:
+    const DistanceMatrix dist;
     index_t idx_below, idx_above, j, k;
     diameter_entry_t simplex;
-    index_t dim;
+    index_t dim{};
     const coefficient_t modulus;
     const binomial_coeff_table& binomial_coeff;
     const ripser& parent;
+    mutable std::vector<index_t> vertices;
 
 public:
+
+    diameter_entry_t get_zero_pivot_facet(const diameter_entry_t simplex, const index_t dim) {
+        simplex_boundary_enumerator facets(0, *this);
+        facets.set_simplex(simplex, dim);
+        while (facets.has_next()) {
+            diameter_entry_t facet = facets.next();
+            if (get_diameter(facet) == get_diameter(simplex)) return facet;
+        }
+        return diameter_entry_t(-1);
+    }
+
+    diameter_entry_t get_zero_pivot_cofacet(const diameter_entry_t simplex, const index_t dim) {
+        simplex_coboundary_enumerator cofacets(*this);
+        cofacets.set_simplex(simplex, dim);
+        while (cofacets.has_next()) {
+            diameter_entry_t cofacet = cofacets.next();
+            if (get_diameter(cofacet) == get_diameter(simplex)) return cofacet;
+        }
+        return diameter_entry_t(-1);
+    }
+
+    diameter_entry_t get_zero_apparent_facet(const diameter_entry_t simplex, const index_t dim) {
+        diameter_entry_t facet = get_zero_pivot_facet(simplex, dim);
+        return ((get_index(facet) != -1) &&
+                (get_index(get_zero_pivot_cofacet(facet, dim - 1)) == get_index(simplex)))
+               ? facet
+               : diameter_entry_t(-1);
+    }
+
+    diameter_entry_t get_zero_apparent_cofacet(const diameter_entry_t simplex, const index_t dim) {
+        diameter_entry_t cofacet = get_zero_pivot_cofacet(simplex, dim);
+        return ((get_index(cofacet) != -1) &&
+                (get_index(get_zero_pivot_facet(cofacet, dim + 1)) == get_index(simplex)))
+               ? cofacet
+               : diameter_entry_t(-1);
+    }
+
+    bool is_in_zero_apparent_pair(const diameter_entry_t simplex, const index_t dim) {
+        return (get_index(get_zero_apparent_cofacet(simplex, dim)) != -1) ||
+               (get_index(get_zero_apparent_facet(simplex, dim)) != -1);
+    }
+
     simplex_boundary_enumerator(const diameter_entry_t _simplex, const index_t _dim, const ripser& _parent)
-            : idx_below(get_index(_simplex)), idx_above(0), j(_parent.n - 1), k(_dim),
+            : dist(_parent.dist),  // Explicitly initialize dist
+              idx_below(get_index(_simplex)), idx_above(0), j(_parent.n - 1), k(_dim),
               simplex(_simplex), modulus(_parent.modulus), binomial_coeff(_parent.binomial_coeff), parent(_parent) {}
 
     simplex_boundary_enumerator(const index_t _dim, const ripser& _parent)
@@ -90,10 +121,38 @@ public:
 
     bool has_next() { return (k >= 0); }
 
+    // Implementation of `get_simplex_vertices`
+    template <typename OutputIterator>
+    OutputIterator get_simplex_vertices(index_t idx, const index_t dim, index_t n,
+                                        OutputIterator out)  const {
+        --n;
+        for (index_t k = dim + 1; k > 1; --k) {
+            n = get_max_vertex(idx, k, n);
+            *out++ = n;
+            idx -= binomial_coeff(n, k);
+        }
+        *out = idx;
+        return out;
+    }
+
+    // Helper for next()
+    value_t compute_diameter(const index_t index, const index_t dim) const {
+        value_t diam = -std::numeric_limits<value_t>::infinity();
+
+        vertices.resize(dim + 1);
+        get_simplex_vertices(index, dim, dist.size(), vertices.rbegin());
+
+        for (index_t i = 0; i <= dim; ++i)
+            for (index_t j = 0; j < i; ++j) {
+                diam = std::max(diam, dist(vertices[i], vertices[j]));
+            }
+        return diam;
+    }
+
     diameter_entry_t next() {
         j = parent.get_max_vertex(idx_below, k + 1, j);
         index_t face_index = idx_above - binomial_coeff(j, k + 1) + idx_below;
-        value_t face_diameter = parent.compute_diameter(face_index, dim - 1);
+        value_t face_diameter = compute_diameter(face_index, dim - 1);
 
         coefficient_t face_coefficient = (k & 1 ? -1 + modulus : 1) * get_coefficient(simplex) % modulus;
 
@@ -103,7 +162,25 @@ public:
 
         return diameter_entry_t(face_diameter, face_index, face_coefficient);
     }
+
+    index_t get_max_vertex(const index_t idx, const index_t k, const index_t n) const {
+        return get_max(n, k - 1, [&](index_t w) -> bool { return (binomial_coeff(w, k) <= idx); });
+    }
+
 };
+
+// Template specialization for `compressed_lower_distance_matrix`
+template <>
+std::vector<diameter_index_t> ripser<compressed_lower_distance_matrix>::get_edges() {
+    std::vector<diameter_index_t> edges;
+    std::vector<index_t> vertices(2);
+    for (index_t index = binomial_coeff(n, 2); index-- > 0;) {
+        get_simplex_vertices(index, 1, dist.size(), vertices.rbegin());
+        value_t length = dist(vertices[0], vertices[1]);
+        if (length <= threshold) edges.push_back({length, index});
+    }
+    return edges;
+}
 
 // Implementation of `get_zero_pivot_cofacet`
 template <typename DistanceMatrix>
@@ -381,6 +458,7 @@ void ripser<DistanceMatrix>::compute_pairs(const std::vector<diameter_index_t>& 
 #endif
 }
 
+
 // Implementation of `assemble_columns_to_reduce`
 template <typename DistanceMatrix>
 void ripser<DistanceMatrix>::assemble_columns_to_reduce(std::vector<diameter_index_t>& simplices,
@@ -449,17 +527,12 @@ void ripser<DistanceMatrix>::compute_barcodes() {
     }
 }
 
-// Template specialization for `compressed_lower_distance_matrix`
-template <>
-std::vector<diameter_index_t> ripser<compressed_lower_distance_matrix>::get_edges() {
-    std::vector<diameter_index_t> edges;
-    std::vector<index_t> vertices(2);
-    for (index_t index = binomial_coeff(n, 2); index-- > 0;) {
-        get_simplex_vertices(index, 1, dist.size(), vertices.rbegin());
-        value_t length = dist(vertices[0], vertices[1]);
-        if (length <= threshold) edges.push_back({length, index});
-    }
-    return edges;
+
+
+// Helper for get_edges()
+template<>
+index_t ripser<sparse_distance_matrix>::get_edge_index(const index_t i, const index_t j) const {
+    return binomial_coeff(i, 2) + j;
 }
 
 // Template specialization for `sparse_distance_matrix`

@@ -8,7 +8,7 @@ sparse_distance_matrix::sparse_distance_matrix(const DistanceMatrix& mat, const 
     for (size_t i = 0; i < size(); ++i) {
         for (size_t j = 0; j < size(); ++j) {
             if (i != j) {
-                auto d = mat(i, j);
+                auto d = mat[i][j];
                 if (d <= threshold) {
                     ++num_edges;
                     neighbors[i].push_back({j, d});

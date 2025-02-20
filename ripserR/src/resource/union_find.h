@@ -5,21 +5,25 @@
 #ifndef RIPSERV2_UNION_FIND_H
 #define RIPSERV2_UNION_FIND_H
 
-#include "ripser.h"
+#ifndef UNION_FIND_H
+#define UNION_FIND_H
+
 #include "types.h"
 
-using namespace std;
+#include <vector>
+#include <cstdint>
 
 class union_find {
-    vector<index_t> parent;
-    vector<uint8_t> rank;
+private:
+    std::vector<index_t> parent;
+    std::vector<uint8_t> rank;
 
 public:
-    explicit union_find(const index_t n);
-
+    explicit union_find(index_t n);
     index_t find(index_t x);
     void link(index_t x, index_t y);
 };
 
+#endif // UNION_FIND_H
 
 #endif //RIPSERV2_UNION_FIND_H

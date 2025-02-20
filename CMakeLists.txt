@@ -24,4 +24,5 @@ add_executable(RipserV2
         ripserR/src/ripserSol.cpp
         ripserR/src/ripserSolution.cpp
         ripserR/src/resource/compressed_distance_matrix.h
-        ripserR/src/resource/compressed_distance_matrix.tpp)
+        ripserR/src/resource/compressed_distance_matrix.tpp
+        ripserR/src/resource/binomial_coeff_table.cpp)

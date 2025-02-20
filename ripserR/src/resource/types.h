@@ -5,6 +5,9 @@
 #ifndef RIPSERR_TYPES_H
 #define RIPSERR_TYPES_H
 
+#include <cstdint>
+#include <utility>
+
 // Type definitions
 typedef int64_t index_t;
 typedef float value_t;

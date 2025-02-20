@@ -20,7 +20,7 @@ compressed_distance_matrix<Layout>::compressed_distance_matrix(const DistanceMat
 
     for (size_t i = 1; i < size(); ++i)
         for (size_t j = 0; j < i; ++j)
-            rows[i][j] = mat(i, j);
+            rows[i][j] = mat[i][j];
 }
 
 // Returns the size of the distance matrix
