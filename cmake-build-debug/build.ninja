@@ -49,68 +49,12 @@ cmake_ninja_workdir = /Users/kentphipps/R_Projects/RipserV2/cmake-build-debug/
 
 build cmake_object_order_depends_target_RipserV2: phony || CMakeFiles/RipserV2.dir
 
-build CMakeFiles/RipserV2.dir/ripserR/src/resource/ripser.cpp.o: CXX_COMPILER__RipserV2_unscanned_Debug /Users/kentphipps/R_Projects/RipserV2/ripserR/src/resource/ripser.cpp || cmake_object_order_depends_target_RipserV2
-  DEP_FILE = CMakeFiles/RipserV2.dir/ripserR/src/resource/ripser.cpp.o.d
-  FLAGS = -g -std=gnu++14 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.0.sdk -fcolor-diagnostics
-  INCLUDES = -I/Users/kentphipps/R_Projects/RipserV2/ripserR/src/resource
-  OBJECT_DIR = CMakeFiles/RipserV2.dir
-  OBJECT_FILE_DIR = CMakeFiles/RipserV2.dir/ripserR/src/resource
-
-build CMakeFiles/RipserV2.dir/ripserR/src/resource/sparse_distance_matrix.cpp.o: CXX_COMPILER__RipserV2_unscanned_Debug /Users/kentphipps/R_Projects/RipserV2/ripserR/src/resource/sparse_distance_matrix.cpp || cmake_object_order_depends_target_RipserV2
-  DEP_FILE = CMakeFiles/RipserV2.dir/ripserR/src/resource/sparse_distance_matrix.cpp.o.d
-  FLAGS = -g -std=gnu++14 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.0.sdk -fcolor-diagnostics
-  INCLUDES = -I/Users/kentphipps/R_Projects/RipserV2/ripserR/src/resource
-  OBJECT_DIR = CMakeFiles/RipserV2.dir
-  OBJECT_FILE_DIR = CMakeFiles/RipserV2.dir/ripserR/src/resource
-
-build CMakeFiles/RipserV2.dir/ripserR/src/resource/union_find.cpp.o: CXX_COMPILER__RipserV2_unscanned_Debug /Users/kentphipps/R_Projects/RipserV2/ripserR/src/resource/union_find.cpp || cmake_object_order_depends_target_RipserV2
-  DEP_FILE = CMakeFiles/RipserV2.dir/ripserR/src/resource/union_find.cpp.o.d
-  FLAGS = -g -std=gnu++14 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.0.sdk -fcolor-diagnostics
-  INCLUDES = -I/Users/kentphipps/R_Projects/RipserV2/ripserR/src/resource
-  OBJECT_DIR = CMakeFiles/RipserV2.dir
-  OBJECT_FILE_DIR = CMakeFiles/RipserV2.dir/ripserR/src/resource
-
-build CMakeFiles/RipserV2.dir/ripserR/src/main.cpp.o: CXX_COMPILER__RipserV2_unscanned_Debug /Users/kentphipps/R_Projects/RipserV2/ripserR/src/main.cpp || cmake_object_order_depends_target_RipserV2
-  DEP_FILE = CMakeFiles/RipserV2.dir/ripserR/src/main.cpp.o.d
-  FLAGS = -g -std=gnu++14 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.0.sdk -fcolor-diagnostics
-  INCLUDES = -I/Users/kentphipps/R_Projects/RipserV2/ripserR/src/resource
-  OBJECT_DIR = CMakeFiles/RipserV2.dir
-  OBJECT_FILE_DIR = CMakeFiles/RipserV2.dir/ripserR/src
-
-build CMakeFiles/RipserV2.dir/ripserR/src/rcpp_hello_world.cpp.o: CXX_COMPILER__RipserV2_unscanned_Debug /Users/kentphipps/R_Projects/RipserV2/ripserR/src/rcpp_hello_world.cpp || cmake_object_order_depends_target_RipserV2
-  DEP_FILE = CMakeFiles/RipserV2.dir/ripserR/src/rcpp_hello_world.cpp.o.d
-  FLAGS = -g -std=gnu++14 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.0.sdk -fcolor-diagnostics
-  INCLUDES = -I/Users/kentphipps/R_Projects/RipserV2/ripserR/src/resource
-  OBJECT_DIR = CMakeFiles/RipserV2.dir
-  OBJECT_FILE_DIR = CMakeFiles/RipserV2.dir/ripserR/src
-
-build CMakeFiles/RipserV2.dir/ripserR/src/RcppExports.cpp.o: CXX_COMPILER__RipserV2_unscanned_Debug /Users/kentphipps/R_Projects/RipserV2/ripserR/src/RcppExports.cpp || cmake_object_order_depends_target_RipserV2
-  DEP_FILE = CMakeFiles/RipserV2.dir/ripserR/src/RcppExports.cpp.o.d
-  FLAGS = -g -std=gnu++14 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.0.sdk -fcolor-diagnostics
-  INCLUDES = -I/Users/kentphipps/R_Projects/RipserV2/ripserR/src/resource
-  OBJECT_DIR = CMakeFiles/RipserV2.dir
-  OBJECT_FILE_DIR = CMakeFiles/RipserV2.dir/ripserR/src
-
 build CMakeFiles/RipserV2.dir/ripserR/src/ripserSol.cpp.o: CXX_COMPILER__RipserV2_unscanned_Debug /Users/kentphipps/R_Projects/RipserV2/ripserR/src/ripserSol.cpp || cmake_object_order_depends_target_RipserV2
   DEP_FILE = CMakeFiles/RipserV2.dir/ripserR/src/ripserSol.cpp.o.d
   FLAGS = -g -std=gnu++14 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.0.sdk -fcolor-diagnostics
   INCLUDES = -I/Users/kentphipps/R_Projects/RipserV2/ripserR/src/resource
   OBJECT_DIR = CMakeFiles/RipserV2.dir
   OBJECT_FILE_DIR = CMakeFiles/RipserV2.dir/ripserR/src
-
-build CMakeFiles/RipserV2.dir/ripserR/src/ripserSolution.cpp.o: CXX_COMPILER__RipserV2_unscanned_Debug /Users/kentphipps/R_Projects/RipserV2/ripserR/src/ripserSolution.cpp || cmake_object_order_depends_target_RipserV2
-  DEP_FILE = CMakeFiles/RipserV2.dir/ripserR/src/ripserSolution.cpp.o.d
-  FLAGS = -g -std=gnu++14 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.0.sdk -fcolor-diagnostics
-  INCLUDES = -I/Users/kentphipps/R_Projects/RipserV2/ripserR/src/resource
-  OBJECT_DIR = CMakeFiles/RipserV2.dir
-  OBJECT_FILE_DIR = CMakeFiles/RipserV2.dir/ripserR/src
-
-build CMakeFiles/RipserV2.dir/ripserR/src/resource/binomial_coeff_table.cpp.o: CXX_COMPILER__RipserV2_unscanned_Debug /Users/kentphipps/R_Projects/RipserV2/ripserR/src/resource/binomial_coeff_table.cpp || cmake_object_order_depends_target_RipserV2
-  DEP_FILE = CMakeFiles/RipserV2.dir/ripserR/src/resource/binomial_coeff_table.cpp.o.d
-  FLAGS = -g -std=gnu++14 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.0.sdk -fcolor-diagnostics
-  INCLUDES = -I/Users/kentphipps/R_Projects/RipserV2/ripserR/src/resource
-  OBJECT_DIR = CMakeFiles/RipserV2.dir
-  OBJECT_FILE_DIR = CMakeFiles/RipserV2.dir/ripserR/src/resource
 
 
 # =============================================================================
@@ -120,7 +64,7 @@ build CMakeFiles/RipserV2.dir/ripserR/src/resource/binomial_coeff_table.cpp.o: C
 #############################################
 # Link the executable RipserV2
 
-build RipserV2: CXX_EXECUTABLE_LINKER__RipserV2_Debug CMakeFiles/RipserV2.dir/ripserR/src/resource/ripser.cpp.o CMakeFiles/RipserV2.dir/ripserR/src/resource/sparse_distance_matrix.cpp.o CMakeFiles/RipserV2.dir/ripserR/src/resource/union_find.cpp.o CMakeFiles/RipserV2.dir/ripserR/src/main.cpp.o CMakeFiles/RipserV2.dir/ripserR/src/rcpp_hello_world.cpp.o CMakeFiles/RipserV2.dir/ripserR/src/RcppExports.cpp.o CMakeFiles/RipserV2.dir/ripserR/src/ripserSol.cpp.o CMakeFiles/RipserV2.dir/ripserR/src/ripserSolution.cpp.o CMakeFiles/RipserV2.dir/ripserR/src/resource/binomial_coeff_table.cpp.o
+build RipserV2: CXX_EXECUTABLE_LINKER__RipserV2_Debug CMakeFiles/RipserV2.dir/ripserR/src/ripserSol.cpp.o
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.0.sdk
   OBJECT_DIR = CMakeFiles/RipserV2.dir
   POST_BUILD = :
