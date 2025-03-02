@@ -5,7 +5,7 @@ rcpp_hello_world <- function() {
     .Call(`_ripserAPI_rcpp_hello_world`)
 }
 
-ripser_test <- function(filePath) {
-    .Call(`_ripserAPI_ripser_test`, filePath)
+ripser_test <- function(vec) {
+    .Call(`_ripserAPI_ripser_test`, vec)
 }
 

@@ -21,13 +21,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // ripser_test
-Rcpp::DataFrame ripser_test(std::string filePath);
-RcppExport SEXP _ripserAPI_ripser_test(SEXP filePathSEXP) {
+Rcpp::DataFrame ripser_test(NumericVector vec);
+RcppExport SEXP _ripserAPI_ripser_test(SEXP vecSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string >::type filePath(filePathSEXP);
-    rcpp_result_gen = Rcpp::wrap(ripser_test(filePath));
+    Rcpp::traits::input_parameter< NumericVector >::type vec(vecSEXP);
+    rcpp_result_gen = Rcpp::wrap(ripser_test(vec));
     return rcpp_result_gen;
 END_RCPP
 }

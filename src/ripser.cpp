@@ -1189,20 +1189,29 @@ void print_usage_and_exit(int exit_code) {
 }
 
 // [[Rcpp::export]]
-Rcpp::DataFrame ripser_test(std::string filePath) {
+Rcpp::DataFrame ripser_test(NumericVector vec) {
     std::cout << "hello world" << std::endl;
 
-//    std::vector<value_t> _distances  = {4.0f,
-//                                        3.0f, 5.0f,
-//                                        5.0f, 3.0f, 4.0f};
-//    compressed_lower_distance_matrix dist(std::move(_distances));
+    // Convert R NumericVector to std::vector<value_t> - potentially slowing down programing
+    // TODO: See if this copy of data is required. Not a big deal though.
+    std::vector<value_t> distances(vec.begin(), vec.end());
+
+    for (auto num : vec)
+        std::cout << num << std::endl;
+
+//    std::vector<value_t> _distances  = {2.0f,
+//                                        3.5f, 1.5f,
+//                                        4.2f, 2.8f, 3.0f,
+//                                        5.1f, 3.9f, 4.4f, 1.2f
+//                                        };
+    compressed_lower_distance_matrix dist(std::move(distances));
 //
 
 //    const char* filePath = "examples/test.txt";
-    std::ifstream file_stream(filePath);
-
-    compressed_lower_distance_matrix dist =
-            read_lower_distance_matrix(file_stream);
+//    std::ifstream file_stream(filePath);
+//
+//    compressed_lower_distance_matrix dist =
+//            read_lower_distance_matrix(file_stream);
 
 //    ripser<compressed_lower_distance_matrix>(std::move(_distances), 3, 3, 5.0f,
 //            0).compute_barcodes();
