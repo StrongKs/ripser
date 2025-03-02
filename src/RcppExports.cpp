@@ -21,7 +21,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // ripser_test
-int ripser_test(std::string filePath);
+Rcpp::DataFrame ripser_test(std::string filePath);
 RcppExport SEXP _ripserAPI_ripser_test(SEXP filePathSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

@@ -53,6 +53,10 @@
 #include <queue>
 #include <sstream>
 #include <unordered_map>
+#include <Rcpp.h>
+#include <vector>
+
+using namespace Rcpp;
 
 #ifdef USE_ROBINHOOD_HASHMAP
 
@@ -404,6 +408,7 @@ template <typename DistanceMatrix> class ripser {
 	const std::vector<coefficient_t> multiplicative_inverse;
 	mutable std::vector<diameter_entry_t> cofacet_entries;
 	mutable std::vector<index_t> vertices;
+    mutable std::vector<std::pair<value_t, value_t>> solution;
 
 	struct entry_hash {
 		std::size_t operator()(const entry_t& e) const { return hash<index_t>()(::get_index(e)); }
@@ -619,8 +624,12 @@ public:
 
 			if (u != v) {
 #ifdef PRINT_PERSISTENCE_PAIRS
-				if (get_diameter(e) != 0)
-					std::cout << " [0," << get_diameter(e) << ")" << std::endl;
+				if (get_diameter(e) != 0) {
+                    std::cout << " [0," << get_diameter(e) << ")" << std::endl;
+                    std::pair<value_t, value_t> solPair(0.0f, static_cast<value_t>(get_diameter(e)));
+                    solution.push_back(solPair);
+                }
+
 #endif
 				dset.link(u, v);
 			} else if ((dim_max > 0) && (get_index(get_zero_apparent_cofacet(e, 1)) == -1))
@@ -629,8 +638,14 @@ public:
 		if (dim_max > 0) std::reverse(columns_to_reduce.begin(), columns_to_reduce.end());
 
 #ifdef PRINT_PERSISTENCE_PAIRS
-		for (index_t i = 0; i < n; ++i)
-			if (dset.find(i) == i) std::cout << " [0, )" << std::endl;
+		for (index_t i = 0; i < n; ++i){
+            if (dset.find(i) == i) {
+                std::cout << " [0, )" << std::endl;
+                std::pair<value_t , value_t> solPair(0.0f, std::numeric_limits<value_t>::infinity());
+                solution.push_back(solPair);
+            }
+        }
+
 #endif
 	}
 
@@ -780,6 +795,8 @@ public:
 							std::cerr << clear_line << std::flush;
 #endif
 							std::cout << " [" << diameter << "," << death << ")" << std::endl;
+                            std::pair<value_t , value_t> solPair(diameter, death);
+                            solution.push_back(solPair);
 						}
 #endif
 						pivot_column_index.insert({get_entry(pivot), index_column_to_reduce});
@@ -798,6 +815,8 @@ public:
 					std::cerr << clear_line << std::flush;
 #endif
 					std::cout << " [" << diameter << ", )" << std::endl;
+                    std::pair<value_t , value_t> solPair(diameter, std::numeric_limits<value_t>::infinity());
+                    solution.push_back(solPair);
 #endif
 					break;
 				}
@@ -810,7 +829,7 @@ public:
 
 	std::vector<diameter_index_t> get_edges();
 
-	void compute_barcodes() {
+	std::vector<std::pair<value_t, value_t>> compute_barcodes() {
 		std::vector<diameter_index_t> simplices, columns_to_reduce;
 
 		compute_dim_0_pairs(simplices, columns_to_reduce);
@@ -825,6 +844,7 @@ public:
 				assemble_columns_to_reduce(simplices, columns_to_reduce, pivot_column_index,
 				                           dim + 1);
 		}
+        return solution;
 	}
 };
 
@@ -1169,7 +1189,7 @@ void print_usage_and_exit(int exit_code) {
 }
 
 // [[Rcpp::export]]
-int ripser_test(std::string filePath) {
+Rcpp::DataFrame ripser_test(std::string filePath) {
     std::cout << "hello world" << std::endl;
 
 //    std::vector<value_t> _distances  = {4.0f,
@@ -1187,8 +1207,17 @@ int ripser_test(std::string filePath) {
 //    ripser<compressed_lower_distance_matrix>(std::move(_distances), 3, 3, 5.0f,
 //            0).compute_barcodes();
 
-    ripser<compressed_lower_distance_matrix>(std::move(dist), 1, 9999999, 1,
+    std::vector<std::pair<value_t, value_t>> riper_solution = ripser<compressed_lower_distance_matrix>(std::move(dist), 1, 9999999, 1,
                                              999).compute_barcodes();
+
+    // Convert to R DataFrame
+    std::vector<float> birth, death;
+    for (const auto& pair : riper_solution) {
+        birth.push_back(pair.first);
+        death.push_back(pair.second);
+    }
+
+    return Rcpp::DataFrame::create(_["Birth"] = birth, _["Death"] = death);
 }
 
 //int main() {
