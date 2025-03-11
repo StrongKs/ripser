@@ -31,10 +31,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// ripser_sparseInput_test
+Rcpp::DataFrame ripser_sparseInput_test(Rcpp::NumericVector sparseVec);
+RcppExport SEXP _ripserAPI_ripser_sparseInput_test(SEXP sparseVecSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type sparseVec(sparseVecSEXP);
+    rcpp_result_gen = Rcpp::wrap(ripser_sparseInput_test(sparseVec));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_ripserAPI_rcpp_hello_world", (DL_FUNC) &_ripserAPI_rcpp_hello_world, 0},
     {"_ripserAPI_ripser_test", (DL_FUNC) &_ripserAPI_ripser_test, 1},
+    {"_ripserAPI_ripser_sparseInput_test", (DL_FUNC) &_ripserAPI_ripser_sparseInput_test, 1},
     {NULL, NULL, 0}
 };
 

@@ -1228,7 +1228,45 @@ Rcpp::DataFrame ripser_test(NumericVector vec) {
 
     return Rcpp::DataFrame::create(_["Birth"] = birth, _["Death"] = death);
 }
+// [[Rcpp::export]]
+Rcpp::DataFrame ripser_sparseInput_test(Rcpp::NumericVector sparseVec) {
+  std::vector<std::vector<index_diameter_t>> neighbors;
+  index_t num_edges = 0;
 
+  for (size_t idx = 0; idx + 2 < sparseVec.size(); idx += 3) {
+    auto i = static_cast<size_t>(sparseVec[idx]);
+    auto j = static_cast<size_t>(sparseVec[idx + 1]);
+    auto d = static_cast<value_t>(sparseVec[idx + 2]);
+    if (i != j) {
+      neighbors.resize(std::max({neighbors.size(), i + 1, j + 1}));
+      neighbors[i].push_back({j, d});
+      neighbors[j].push_back({i, d});
+      ++num_edges;
+    }
+  }
+
+  for (size_t v = 0; v < neighbors.size(); ++v) {
+    std::sort(neighbors[v].begin(), neighbors[v].end(),
+              [](const index_diameter_t &a, const index_diameter_t &b) {
+                return get_index(a) < get_index(b);
+              });
+  }
+
+  sparse_distance_matrix dist(std::move(neighbors), num_edges);
+  auto solution = ripser<sparse_distance_matrix>(std::move(dist), 1, 9999999, 1.0f, 999)
+                                                                               .compute_barcodes();
+
+  std::vector<float> birth, death;
+  for (auto &p : solution) {
+    birth.push_back(p.first);
+    death.push_back(p.second);
+  }
+
+  return Rcpp::DataFrame::create(
+    Rcpp::Named("Birth") = birth,
+    Rcpp::Named("Death") = death
+  );
+}
 //int main() {
 //    std::cout << "hello world" << std::endl;
 //

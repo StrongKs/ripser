@@ -9,3 +9,7 @@ ripser_test <- function(vec) {
     .Call(`_ripserAPI_ripser_test`, vec)
 }
 
+ripser_sparseInput_test <- function(sparseVec) {
+    .Call(`_ripserAPI_ripser_sparseInput_test`, sparseVec)
+}
+
