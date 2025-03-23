@@ -21,7 +21,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // ripser_test
-Rcpp::DataFrame ripser_test(NumericVector vec);
+Rcpp::List ripser_test(NumericVector vec);
 RcppExport SEXP _ripserAPI_ripser_test(SEXP vecSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -32,7 +32,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // ripser_sparseInput_test
-Rcpp::DataFrame ripser_sparseInput_test(Rcpp::NumericVector sparseVec);
+Rcpp::List ripser_sparseInput_test(Rcpp::NumericVector sparseVec);
 RcppExport SEXP _ripserAPI_ripser_sparseInput_test(SEXP sparseVecSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

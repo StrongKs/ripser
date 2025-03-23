@@ -409,6 +409,8 @@ template <typename DistanceMatrix> class ripser {
 	mutable std::vector<diameter_entry_t> cofacet_entries;
 	mutable std::vector<index_t> vertices;
     mutable std::vector<std::pair<value_t, value_t>> solution;
+    mutable std::vector<int> matrixSolLenth;
+    int currLength = 0;
 
 	struct entry_hash {
 		std::size_t operator()(const entry_t& e) const { return hash<index_t>()(::get_index(e)); }
@@ -628,6 +630,7 @@ public:
 //                    std::cout << " [0," << get_diameter(e) << ")" << std::endl;
                     std::pair<value_t, value_t> solPair(0.0f, static_cast<value_t>(get_diameter(e)));
                     solution.push_back(solPair);
+                    currLength++;
                 }
 
 #endif
@@ -643,6 +646,7 @@ public:
 //                std::cout << " [0, )" << std::endl;
                 std::pair<value_t , value_t> solPair(0.0f, std::numeric_limits<value_t>::infinity());
                 solution.push_back(solPair);
+                currLength++;
             }
         }
 
@@ -736,6 +740,9 @@ public:
 
 #ifdef PRINT_PERSISTENCE_PAIRS
 //		std::cout << "persistence intervals in dim " << dim << ":" << std::endl;
+        // take current dimension and append to list of matrix
+        matrixSolLenth.push_back(currLength);
+        currLength = 0;
 #endif
 
 		compressed_sparse_matrix<diameter_entry_t> reduction_matrix;
@@ -797,6 +804,7 @@ public:
 //							std::cout << " [" << diameter << "," << death << ")" << std::endl;
                             std::pair<value_t , value_t> solPair(diameter, death);
                             solution.push_back(solPair);
+                            currLength++;
 						}
 #endif
 						pivot_column_index.insert({get_entry(pivot), index_column_to_reduce});
@@ -817,6 +825,7 @@ public:
 //					std::cout << " [" << diameter << ", )" << std::endl;
                     std::pair<value_t , value_t> solPair(diameter, std::numeric_limits<value_t>::infinity());
                     solution.push_back(solPair);
+                    currLength++;
 #endif
 					break;
 				}
@@ -829,7 +838,7 @@ public:
 
 	std::vector<diameter_index_t> get_edges();
 
-	std::vector<std::pair<value_t, value_t>> compute_barcodes() {
+    std::pair<std::vector<std::pair<value_t, value_t>>, std::vector<int>> compute_barcodes() {
 		std::vector<diameter_index_t> simplices, columns_to_reduce;
 
 		compute_dim_0_pairs(simplices, columns_to_reduce);
@@ -844,7 +853,8 @@ public:
 				assemble_columns_to_reduce(simplices, columns_to_reduce, pivot_column_index,
 				                           dim + 1);
 		}
-        return solution;
+        matrixSolLenth.push_back(currLength);
+        return std::make_pair(solution, matrixSolLenth);
 	}
 };
 
@@ -1034,7 +1044,7 @@ euclidean_distance_matrix read_point_cloud(std::istream& input_stream) {
 	}
 
 	euclidean_distance_matrix eucl_dist(std::move(points));
-	index_t n = eucl_dist.size();
+//	index_t n = eucl_dist.size();
 //	std::cout << "point cloud with " << n << " points in dimension "
 //	          << eucl_dist.points.front().size() << std::endl;
 
@@ -1189,7 +1199,7 @@ void print_usage_and_exit(int exit_code) {
 }
 
 // [[Rcpp::export]]
-Rcpp::DataFrame ripser_test(NumericVector vec) {
+Rcpp::List ripser_test(NumericVector vec) {
 
     // Convert R NumericVector to std::vector<value_t> - potentially slowing down programing
     // TODO: See if this copy of data is required. Not a big deal though.
@@ -1215,20 +1225,56 @@ Rcpp::DataFrame ripser_test(NumericVector vec) {
 //    ripser<compressed_lower_distance_matrix>(std::move(_distances), 3, 3, 5.0f,
 //            0).compute_barcodes();
 
-    std::vector<std::pair<value_t, value_t>> riper_solution = ripser<compressed_lower_distance_matrix>(std::move(dist), 1, 9999999, 1,
-                                             999).compute_barcodes();
+//    std::vector<std::pair<value_t, value_t>> riper_solution, std::vector<int> matrixLength = ripser<compressed_lower_distance_matrix>(std::move(dist), 1, 9999999, 1,
+//                                             999).compute_barcodes();
+//    auto [riper_solution, matrixLength] = ripser<compressed_lower_distance_matrix>(std::move(dist), 1, 9999999, 1,
+//                                                                                                              999).compute_barcodes();
 
-    // Convert to R DataFrame
-    std::vector<float> birth, death;
-    for (const auto& pair : riper_solution) {
-        birth.push_back(pair.first);
-        death.push_back(pair.second);
+    auto result = ripser<compressed_lower_distance_matrix>(std::move(dist), 1, 9999999, 1, 999).compute_barcodes();
+
+    std::vector<std::pair<value_t, value_t>> riper_solution = result.first;
+    std::vector<int> matrixLength = result.second;
+
+    std::cout << "Matrix Lengths:" << std::endl;
+    for (auto l : matrixLength) {
+        std::cout << l << std::endl;
     }
 
-    return Rcpp::DataFrame::create(_["Birth"] = birth, _["Death"] = death);
+    // List to store the matrices
+    Rcpp::List matrices;
+
+    int currentIndex = 0; // Keep track of the position in riper_solution
+
+    for (size_t i = 0; i < matrixLength.size(); ++i) {
+        int rows = matrixLength[i];
+
+        // Create a NumericMatrix with 'rows' and 2 columns
+        Rcpp::NumericMatrix matrix(rows, 2);
+
+        // Fill the matrix with the corresponding pairs
+        for (int row = 0; row < rows; ++row) {
+            matrix(row, 0) = riper_solution[currentIndex].first;  // Birth
+            matrix(row, 1) = riper_solution[currentIndex].second; // Death
+            currentIndex++;
+        }
+
+        // Add the matrix to the list
+        matrices.push_back(matrix);
+    }
+
+    return matrices; // Return the list of matrices
+
+//    // Convert to R DataFrame
+//    std::vector<float> birth, death;
+//    for (const auto& pair : riper_solution) {
+//        birth.push_back(pair.first);
+//        death.push_back(pair.second);
+//    }
+//
+//    return Rcpp::DataFrame::create(_["Birth"] = birth, _["Death"] = death);
 }
 // [[Rcpp::export]]
-Rcpp::DataFrame ripser_sparseInput_test(Rcpp::NumericVector sparseVec) {
+Rcpp::List ripser_sparseInput_test(Rcpp::NumericVector sparseVec) {
   std::vector<std::vector<index_diameter_t>> neighbors;
   index_t num_edges = 0;
 
@@ -1252,19 +1298,46 @@ Rcpp::DataFrame ripser_sparseInput_test(Rcpp::NumericVector sparseVec) {
   }
 
   sparse_distance_matrix dist(std::move(neighbors), num_edges);
-  auto solution = ripser<sparse_distance_matrix>(std::move(dist), 1, 9999999, 1.0f, 999)
+    auto result = ripser<sparse_distance_matrix>(std::move(dist), 1, 9999999, 1.0f, 999)
                                                                                .compute_barcodes();
 
-  std::vector<float> birth, death;
-  for (auto &p : solution) {
-    birth.push_back(p.first);
-    death.push_back(p.second);
-  }
+    std::vector<std::pair<value_t, value_t>> solution = result.first;
+    std::vector<int> matrixLength = result.second;
 
-  return Rcpp::DataFrame::create(
-    Rcpp::Named("Birth") = birth,
-    Rcpp::Named("Death") = death
-  );
+    // List to store the matrices
+    Rcpp::List matrices;
+
+    int currentIndex = 0; // Keep track of the position in solution
+
+    for (size_t i = 0; i < matrixLength.size(); ++i) {
+        int rows = matrixLength[i];
+
+        // Create a NumericMatrix with 'rows' and 2 columns
+        Rcpp::NumericMatrix matrix(rows, 2);
+
+        // Fill the matrix with the corresponding pairs
+        for (int row = 0; row < rows; ++row) {
+            matrix(row, 0) = solution[currentIndex].first;  // Birth
+            matrix(row, 1) = solution[currentIndex].second; // Death
+            currentIndex++;
+        }
+
+        // Add the matrix to the list
+        matrices.push_back(matrix);
+    }
+
+    return matrices; // Return the list of matrices
+
+//  std::vector<float> birth, death;
+//  for (auto &p : solution) {
+//    birth.push_back(p.first);
+//    death.push_back(p.second);
+//  }
+//
+//  return Rcpp::DataFrame::create(
+//    Rcpp::Named("Birth") = birth,
+//    Rcpp::Named("Death") = death
+//  );
 }
 //int main() {
 //    std::cout << "hello world" << std::endl;
