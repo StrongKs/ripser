@@ -1235,10 +1235,10 @@ Rcpp::List ripser_test(NumericVector vec) {
     std::vector<std::pair<value_t, value_t>> riper_solution = result.first;
     std::vector<int> matrixLength = result.second;
 
-    std::cout << "Matrix Lengths:" << std::endl;
-    for (auto l : matrixLength) {
-        std::cout << l << std::endl;
-    }
+//    std::cout << "Matrix Lengths:" << std::endl;
+//    for (auto l : matrixLength) {
+//        std::cout << l << std::endl;
+//    }
 
     // List to store the matrices
     Rcpp::List matrices;
