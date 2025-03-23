@@ -609,7 +609,7 @@ public:
 	void compute_dim_0_pairs(std::vector<diameter_index_t>& edges,
 	                         std::vector<diameter_index_t>& columns_to_reduce) {
 #ifdef PRINT_PERSISTENCE_PAIRS
-		std::cout << "persistence intervals in dim 0:" << std::endl;
+//		std::cout << "persistence intervals in dim 0:" << std::endl;
 #endif
 
 		union_find dset(n);
@@ -625,7 +625,7 @@ public:
 			if (u != v) {
 #ifdef PRINT_PERSISTENCE_PAIRS
 				if (get_diameter(e) != 0) {
-                    std::cout << " [0," << get_diameter(e) << ")" << std::endl;
+//                    std::cout << " [0," << get_diameter(e) << ")" << std::endl;
                     std::pair<value_t, value_t> solPair(0.0f, static_cast<value_t>(get_diameter(e)));
                     solution.push_back(solPair);
                 }
@@ -640,7 +640,7 @@ public:
 #ifdef PRINT_PERSISTENCE_PAIRS
 		for (index_t i = 0; i < n; ++i){
             if (dset.find(i) == i) {
-                std::cout << " [0, )" << std::endl;
+//                std::cout << " [0, )" << std::endl;
                 std::pair<value_t , value_t> solPair(0.0f, std::numeric_limits<value_t>::infinity());
                 solution.push_back(solPair);
             }
@@ -735,7 +735,7 @@ public:
 	                   entry_hash_map& pivot_column_index, const index_t dim) {
 
 #ifdef PRINT_PERSISTENCE_PAIRS
-		std::cout << "persistence intervals in dim " << dim << ":" << std::endl;
+//		std::cout << "persistence intervals in dim " << dim << ":" << std::endl;
 #endif
 
 		compressed_sparse_matrix<diameter_entry_t> reduction_matrix;
@@ -794,7 +794,7 @@ public:
 #ifdef INDICATE_PROGRESS
 							std::cerr << clear_line << std::flush;
 #endif
-							std::cout << " [" << diameter << "," << death << ")" << std::endl;
+//							std::cout << " [" << diameter << "," << death << ")" << std::endl;
                             std::pair<value_t , value_t> solPair(diameter, death);
                             solution.push_back(solPair);
 						}
@@ -814,7 +814,7 @@ public:
 #ifdef INDICATE_PROGRESS
 					std::cerr << clear_line << std::flush;
 #endif
-					std::cout << " [" << diameter << ", )" << std::endl;
+//					std::cout << " [" << diameter << ", )" << std::endl;
                     std::pair<value_t , value_t> solPair(diameter, std::numeric_limits<value_t>::infinity());
                     solution.push_back(solPair);
 #endif
@@ -1035,8 +1035,8 @@ euclidean_distance_matrix read_point_cloud(std::istream& input_stream) {
 
 	euclidean_distance_matrix eucl_dist(std::move(points));
 	index_t n = eucl_dist.size();
-	std::cout << "point cloud with " << n << " points in dimension "
-	          << eucl_dist.points.front().size() << std::endl;
+//	std::cout << "point cloud with " << n << " points in dimension "
+//	          << eucl_dist.points.front().size() << std::endl;
 
 	return eucl_dist;
 }
@@ -1190,14 +1190,13 @@ void print_usage_and_exit(int exit_code) {
 
 // [[Rcpp::export]]
 Rcpp::DataFrame ripser_test(NumericVector vec) {
-    std::cout << "hello world" << std::endl;
 
     // Convert R NumericVector to std::vector<value_t> - potentially slowing down programing
     // TODO: See if this copy of data is required. Not a big deal though.
     std::vector<value_t> distances(vec.begin(), vec.end());
 
-    for (auto num : vec)
-        std::cout << num << std::endl;
+//    for (auto num : vec)
+//        std::cout << num << std::endl;
 
 //    std::vector<value_t> _distances  = {2.0f,
 //                                        3.5f, 1.5f,
